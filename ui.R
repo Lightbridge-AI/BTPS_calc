@@ -1,12 +1,16 @@
 ### BTPS calculator 2
 library(shiny)
+library(shinythemes)
 library(dplyr)
 library(purrr)
+library(openxlsx)
+
 
 # UI ----------------------------------------------------------------------
 
 
-shinyUI(fluidPage(
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("sandstone"),
   titlePanel("BTPS calculator"),
   hr(),
   
@@ -107,6 +111,5 @@ shinyUI(fluidPage(
   
   
   
-)
 )
 

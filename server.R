@@ -1,7 +1,9 @@
 ### BTPS calculator 2
 library(shiny)
+library(shinythemes)
 library(dplyr)
 library(purrr)
+library(openxlsx)
 
 # Function ----------------------------------------------------------------
 
@@ -36,7 +38,7 @@ get_factor_2 <- function(temp){
 # Server ------------------------------------------------------------------
 
 
-shinyServer(function(input, output, session) {
+server <- function(input, output, session) {
   
   btps_factor <- reactive({
     
@@ -323,6 +325,7 @@ shinyServer(function(input, output, session) {
   
   df_custom <- reactive({
     
+    req(input$temp)
     df <- tibble(Parameter = map_chr(col_names_tx(), ~ input[[.x]] ),
                  ATPS = map_dbl(col_names_num(), ~ input[[.x]] ),
                  Unit = "")
@@ -379,5 +382,4 @@ shinyServer(function(input, output, session) {
   
   
 }
-)
 
