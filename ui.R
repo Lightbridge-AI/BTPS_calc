@@ -1,6 +1,7 @@
 ### BTPS calculator 2
 library(shiny)
 library(shinythemes)
+library(shinyFeedback)
 library(dplyr)
 library(purrr)
 library(openxlsx)
@@ -11,7 +12,11 @@ library(openxlsx)
 
 ui <- fluidPage(
   theme = shinythemes::shinytheme("sandstone"),
+  shinyFeedback::useShinyFeedback(),
   titlePanel("BTPS calculator"),
+  tags$a(href="https://github.com/Lightbridge-AI/BTPS_calc", "Get Code"),
+  
+  
   hr(),
   
   # UI : Sidebar ----------------------------------------------------------------------
@@ -54,25 +59,37 @@ ui <- fluidPage(
       
       
       checkboxInput("custom","Add custom parameter at ATPS ?" , value = F),
-      fluidRow(
-        column(8,
-               uiOutput("col_text"),
-               
-               fluidRow(
-                 column(3,
-                        uiOutput("add_disp")), 
-                 column(3,
-                        uiOutput("remove_disp"))
-               ),
-               
-               
-        ),
-        column(4,
-               uiOutput("col_num")
-               
+      
+      tabsetPanel(
+        id = "binary",
+        type = "hidden",
+        tabPanel("not_show"),
+        tabPanel("show",
+                 fluidRow(
+                   column(8,
+                          uiOutput("col_text"),
+                          
+                          fluidRow(
+                            column(3,
+                                   actionButton("add","Add")), 
+                            column(3,
+                                   actionButton("remove","Remove"))
+                            
+                          )
+                          
+                          
+                   ),
+                   column(4,
+                          uiOutput("col_num")
+                          
+                   )
+                   
+                 )
         )
-        
       )
+      
+      
+      
     ),
     
     
@@ -96,10 +113,13 @@ ui <- fluidPage(
       ),
       hr(),
       
+      
       dataTableOutput("table"),
       fluidRow(
         column(width = 12, downloadButton("download", "Download .xlsx",class = "btn-block"))
       )
+      
+      
       
     )
     
@@ -112,4 +132,5 @@ ui <- fluidPage(
   
   
 )
+
 
