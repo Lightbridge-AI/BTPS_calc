@@ -1,6 +1,7 @@
 ### BTPS calculator 2
 library(shiny)
 library(shinythemes)
+library(shinyFeedback)
 library(dplyr)
 library(purrr)
 library(openxlsx)
@@ -100,6 +101,31 @@ server <- function(input, output, session) {
     input$ec_a * btps_factor()
     
   })
+  
+  
+  # Feedback ----------------------------------------------------------------
+  
+  any_input <- reactive({ 
+    
+    c(input$fev1_a, input$fvc_a, input$ic_a, 
+      input$ec_a, input$tv_a, input$vc_a, input$pef_a) %>% isTruthy()
+    
+  })
+  
+  custom_input <- reactive({
+    
+    input$custom %>% isTruthy()
+  })
+  
+  
+  observeEvent(c(any_input(), custom_input(),input$temp),
+               shinyFeedback::feedbackWarning(
+                 "temp",
+                 !isTruthy(input$temp) && ( any_input() || custom_input() ),
+                 "Please input temperature"
+               )
+  )
+  
   
   
   # Compute each rows ------------------------------------------------------------
@@ -276,6 +302,17 @@ server <- function(input, output, session) {
   
   # Custom parameters ------------------------------------------------------------
   
+  check_string <- reactive({  
+    
+    if(input$custom == T){"show"}else{"not_show"}
+    
+  })
+  
+  observeEvent(input$custom,{
+    updateTabsetPanel(session, "binary", selected = check_string())
+    
+  })
+  
   action <- reactive({
     
     req(input$custom == T)
@@ -291,17 +328,19 @@ server <- function(input, output, session) {
   col_names_tx <- reactive(paste("Parameter", action() ))
   col_names_num <- reactive(paste("Value", action() ))
   
-  output$add_disp <- renderUI({
-    
-    if(input$custom == T){actionButton("add","Add")    }else{NULL}
-    
-  })
+  ### Glitch UI (Not use)
   
-  output$remove_disp <- renderUI({
-    
-    if(input$custom == T){actionButton("remove","Remove")  }else{NULL}
-    
-  })
+  # output$add_disp <- renderUI({
+  #   
+  #   if(input$custom == T){actionButton("add","Add")    }else{NULL}
+  #   
+  # })
+  # 
+  # output$remove_disp <- renderUI({
+  #   
+  #   if(input$custom == T){actionButton("remove","Remove")  }else{NULL}
+  #   
+  # })
   
   output$col_text <- renderUI({
     
@@ -315,23 +354,23 @@ server <- function(input, output, session) {
     
   })
   
-  output$text <- renderText({
-    map_chr(col_names_tx(), ~ input[[.x]] )
-  })
-  
-  output$num <- renderText({
-    map_dbl(col_names_num(), ~ input[[.x]] )
-  })
   
   df_custom <- reactive({
     
-    req(input$temp)
-    df <- tibble(Parameter = map_chr(col_names_tx(), ~ input[[.x]] ),
-                 ATPS = map_dbl(col_names_num(), ~ input[[.x]] ),
-                 Unit = "")
-    
-    df %>% 
-      mutate(BTPS = ATPS * btps_factor() , .after = ATPS)
+    if( !isTruthy(input$temp) ){ tibble(Parameter = map_chr(col_names_tx(), ~ input[[.x]] ),
+                                        ATPS = map_dbl(col_names_num(), ~ input[[.x]] ),
+                                        BTPS = c(NA),
+                                        Unit = c(""))
+    }else{
+      
+      df <- tibble(Parameter = map_chr(col_names_tx(), ~ input[[.x]] ),
+                   ATPS = map_dbl(col_names_num(), ~ input[[.x]] ),
+                   Unit = "")
+      
+      df %>% 
+        mutate(BTPS = ATPS * btps_factor() , .after = ATPS)
+      
+    }
     
   })
   
@@ -382,4 +421,3 @@ server <- function(input, output, session) {
   
   
 }
-
