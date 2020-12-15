@@ -1,0 +1,23 @@
+---
+title: "Lung volume and flow report"
+date: "`r Sys.Date()`"
+output: word_document
+params:
+  btps_factor: NA
+  table: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+options(knitr.kable.NA = "")
+
+params$table %>% knitr::kable("simple")
+```
+
+### Factor to convert volume to 37˚c Sat = `r params$btps_factor`

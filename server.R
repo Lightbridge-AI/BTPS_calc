@@ -5,6 +5,9 @@ library(shinyFeedback)
 library(dplyr)
 library(purrr)
 library(openxlsx)
+library(knitr)
+library(rmarkdown)
+
 
 # Function ----------------------------------------------------------------
 
@@ -414,9 +417,57 @@ server <- function(input, output, session) {
   )
   
   
+  # Download - report_2 - not working -------------------------------------------------------
   
+  # output$report_2 <- downloadHandler(
+  #     # For PDF output, change this to "report.pdf"
+  #     filename = "report.pdf",
+  #     content = function(file) {
+  #         # Copy the report file to a temporary directory before processing it, in
+  #         # case we don't have write permissions to the current working dir (which
+  #         # can happen when deployed).
+  #         tempReport <- file.path(tempdir(), "report_pdf.Rmd")
+  #         file.copy("report_pdf.Rmd", tempReport, overwrite = TRUE)
+  #         
+  #         # Set up parameters to pass to Rmd document
+  #         params <- list(btps_factor = btps_factor(),
+  #                        table = df_all())
+  #         
+  #         # Knit the document, passing in the `params` list, and eval it in a
+  #         # child of the global environment (this isolates the code in the document
+  #         # from the code in this app).
+  #         rmarkdown::render(tempReport, output_file = file,
+  #                           params = params,
+  #                           envir = new.env(parent = globalenv())
+  #         )
+  #     }
+  # )  
   
+  # Download - report_3 -------------------------------------------------------
   
+  output$report_3 <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = "report.doc",
+    content = function(file) {
+      # Copy the report file to a temporary directory before processing it, in
+      # case we don't have write permissions to the current working dir (which
+      # can happen when deployed).
+      tempReport <- file.path(tempdir(), "report_word.Rmd")
+      file.copy("report_word.Rmd", tempReport, overwrite = TRUE)
+      
+      # Set up parameters to pass to Rmd document
+      params <- list(btps_factor = btps_factor(),
+                     table = df_all())
+      
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
   
   
   

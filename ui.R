@@ -5,6 +5,9 @@ library(shinyFeedback)
 library(dplyr)
 library(purrr)
 library(openxlsx)
+library(knitr)
+library(rmarkdown)
+
 
 
 # UI ----------------------------------------------------------------------
@@ -116,8 +119,13 @@ ui <- fluidPage(
       
       dataTableOutput("table"),
       fluidRow(
-        column(width = 12, downloadButton("download", "Download .xlsx",class = "btn-block"))
+        column(6, downloadButton("download", "Download .xlsx",class = "btn-block")
+        ),
+        column(6, downloadButton("report_3", "Download .doc",class = "btn-block")
+        )
       )
+      
+      
       
       
       
@@ -132,5 +140,6 @@ ui <- fluidPage(
   
   
 )
+
 
 
