@@ -464,7 +464,8 @@ server <- function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(btps_factor = btps_factor(),
-                     table = df_all())
+                     table = df_all(),
+                     temp = input$temp)
       
       # Knit the document, passing in the `params` list, and eval it in a
       # child of the global environment (this isolates the code in the document
