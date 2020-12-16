@@ -2,6 +2,7 @@
 library(shiny)
 library(shinythemes)
 library(shinyFeedback)
+library(pins)
 library(dplyr)
 library(purrr)
 library(openxlsx)
@@ -9,26 +10,29 @@ library(knitr)
 library(rmarkdown)
 
 
+# Register ----------------------------------------------------------------
+
+k <- paste0("3d488bc5f88a4dbb","117324e1573bf080061724db")
+
+board_register_github(repo = "Lightbridge-AI/btps-data", 
+                      token = k)
+
 # Function ----------------------------------------------------------------
 
-
-get_factor_2 <- function(temp){
+get_factor <- function(btps.df , temp){
   
-  btps <- tibble(Gas_temp_c = c(20:37),
-                 Factor_37 = c(1.102,1.096,1.091,1.085,1.080,1.075,1.068,1.063,
-                               1.057,1.051,1.045,1.039,1.032,1.026,1.020,1.014,1.007,1.000))
   
   
   out  <- if(temp %in% c(20:37)){
     
-    btps %>% 
-      filter(Gas_temp_c %in% c(floor({{temp}}) , ceiling({{temp}}) ) ) %>% 
+    btps.df %>% 
+      filter(Gas_temp_c %in% {{temp}} ) %>% 
       pull(Factor_37) 
     
     
   }else{
     
-    lm_fit <- lm(Factor_37 ~ Gas_temp_c, data = btps)
+    lm_fit <- lm(Factor_37 ~ Gas_temp_c, data = btps.df)
     newpoint <- tibble(Gas_temp_c = c(temp))
     
     predict(lm_fit, newdata = newpoint, interval = "none") %>% 
@@ -44,10 +48,13 @@ get_factor_2 <- function(temp){
 
 server <- function(input, output, session) {
   
+  btps_df <- pin_reactive("btps-data", board = "github")
+  
   btps_factor <- reactive({
     
     req(input$temp)
-    get_factor_2(input$temp)
+    get_factor(btps_df(), input$temp)
+    
   })
   
   output$btps <- renderText({ paste( btps_factor() %>% round(digits = 3)) })

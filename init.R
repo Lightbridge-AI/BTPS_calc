@@ -4,7 +4,7 @@
 #
 
 my_packages = c("dplyr", "purrr","shinythemes",
-                "shinyFeedback","openxlsx","rmarkdown","knitr")
+                "shinyFeedback","openxlsx","rmarkdown","knitr","pins")
 
 install_if_missing = function(p) {
   if (p %in% rownames(installed.packages()) == FALSE) {

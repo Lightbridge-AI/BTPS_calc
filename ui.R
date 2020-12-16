@@ -2,6 +2,7 @@
 library(shiny)
 library(shinythemes)
 library(shinyFeedback)
+library(pins)
 library(dplyr)
 library(purrr)
 library(openxlsx)
