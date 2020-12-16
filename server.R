@@ -404,11 +404,12 @@ server <- function(input, output, session) {
     
   })
   
-  output$table <- renderDataTable({
+  
+    output$table <- renderDataTable({
     
     df_all()
     
-  }, options =list(lengthMenu = c(15, 20, 30), pageLength = 15))
+  },options = list(bPaginate = FALSE))
   
   # Download  -----------------------------------------------------------
   
